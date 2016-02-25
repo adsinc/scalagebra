@@ -15,9 +15,17 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def apply(row: Int, col: Int): Double = elems(row)(col)
 
+  def unary_- = ???
+
+  def + (other: Matrix) = ???
+
+  def - (other: Matrix) = ???
+
+  def compareSize(other: Matrix): Boolean =
+    other.rows == rows && other.cols == cols
+
   override def equals(that: scala.Any): Boolean = that match {
-    case m: Matrix =>
-      m.cols == cols && m.data == data
+    case m: Matrix => compareSize(m) && m.data == data
     case _ => false
   }
 }
