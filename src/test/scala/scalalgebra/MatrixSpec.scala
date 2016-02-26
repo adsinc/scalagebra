@@ -94,4 +94,8 @@ class MatrixSpec extends FlatSpec with Matchers {
       c <- 0 until m.cols
     } inv(r, c) should be (-m(r, c))
   }
+
+  it should "applied twice return the equals object" in {
+    datas map Matrix.apply foreach { m => m should be (-(-m))}
+  }
 }
