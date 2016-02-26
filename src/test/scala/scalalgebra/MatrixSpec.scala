@@ -84,4 +84,14 @@ class MatrixSpec extends FlatSpec with Matchers {
       }
     }
   }
+
+  "Unary minus" should "change each element to -element" in {
+    for {
+      data <- datas
+      m = Matrix(data)
+      inv = -m
+      r <- 0 until m.rows
+      c <- 0 until m.cols
+    } inv(r, c) should be (-m(r, c))
+  }
 }

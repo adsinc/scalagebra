@@ -15,7 +15,7 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def apply(row: Int, col: Int): Double = elems(row)(col)
 
-  def unary_- = ???
+  def unary_- = Matrix(data map (_ map (-_)))
 
   def + (other: Matrix) = ???
 
