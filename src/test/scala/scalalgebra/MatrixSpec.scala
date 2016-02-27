@@ -15,6 +15,9 @@ class MatrixSpec extends FlatSpec with Matchers {
     Vector(7, 8, 9, 3)
   )
 
+  lazy val rectMatrix = Matrix(rectangleData)
+  lazy val squareMatrix = Matrix(squareData)
+
   lazy val datas = Seq(squareData, rectangleData)
 
   "A Matrix" should "have size equals rows * cols" in {
@@ -93,14 +96,35 @@ class MatrixSpec extends FlatSpec with Matchers {
     datas map Matrix.apply foreach { m => m should be (-(-m))}
   }
 
-  "Plus and minus operator" should "add and subtract scalar to each element" in {
+  "Plus and minus operator for scalar" should "add and subtract scalar to each element" in {
     val scalar = 10
     testForEachElement(_ + scalar, _ + scalar)
     testForEachElement(_ - scalar, _ - scalar)
   }
 
-  "Minus operator" should "be equal + (- element)" in {
+  "Minus operator for scalar" should "be equal + (- element)" in {
     datas map Matrix.apply foreach { m => m - 10 should be(m + (-10)) }
+  }
+
+  "Sum and sub" should "throw exception when add matrix different size" in {
+    a[IllegalArgumentException] should be thrownBy squareMatrix + rectMatrix
+    a[IllegalArgumentException] should be thrownBy squareMatrix - rectMatrix
+  }
+
+  "Sum" should "be commutative" in {
+    //todo
+  }
+
+  it should "be associative" in {
+    //todo
+  }
+
+  it should "not change matrix when add zero matrix" in {
+    //todo
+  }
+
+  it should "be zero matrix when add -matrix" in {
+    //todo
   }
 
   def testForEachElement(matrixFn: Matrix => Matrix,

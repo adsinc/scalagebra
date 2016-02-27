@@ -17,13 +17,16 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def unary_-(): Matrix = Matrix(data map (_ map (-_)))
 
-  def +(other: Matrix): Matrix = ???
+  def +(other: Matrix): Matrix = {
+    require(compareSize(other))
+    ???
+  }
+
+  def -(other: Matrix): Matrix = this + (-other)
 
   def +(number: Double): Matrix = Matrix(data map (_ map (_ + number)))
 
-  def -(other: Matrix): Matrix = ???
-
-  def -(number: Double): Matrix = this + (-number)
+  def -(number: Double): Matrix = Matrix(data map (_ map (_ - number)))
 
   def compareSize(other: Matrix): Boolean =
     other.rows == rows && other.cols == cols
