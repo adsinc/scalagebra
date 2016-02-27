@@ -15,15 +15,15 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def apply(row: Int, col: Int): Double = elems(row)(col)
 
-  def unary_- = Matrix(data map (_ map (-_)))
+  def unary_-(): Matrix = Matrix(data map (_ map (-_)))
 
-  def + (other: Matrix) = ???
+  def +(other: Matrix): Matrix = ???
 
-  def +(number: Double) = Matrix(data map (_ map (_ + number)))
+  def +(number: Double): Matrix = Matrix(data map (_ map (_ + number)))
 
-  def - (other: Matrix) = ???
+  def -(other: Matrix): Matrix = ???
 
-  def -(number: Double) = this + (-number)
+  def -(number: Double): Matrix = this + (-number)
 
   def compareSize(other: Matrix): Boolean =
     other.rows == rows && other.cols == cols
@@ -35,5 +35,5 @@ class Matrix(elems: Vector[Vector[Double]]) {
 }
 
 object Matrix {
-  def apply(elems: Vector[Vector[Double]]) = new Matrix(elems)
+  def apply(elems: Vector[Vector[Double]]): Matrix = new Matrix(elems)
 }
