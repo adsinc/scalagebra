@@ -19,11 +19,11 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def + (other: Matrix) = ???
 
-  def + (number: Double) = ???
+  def +(number: Double) = Matrix(data map (_ map (_ + number)))
 
   def - (other: Matrix) = ???
 
-  def - (number: Double) = ???
+  def -(number: Double) = this + (-number)
 
   def compareSize(other: Matrix): Boolean =
     other.rows == rows && other.cols == cols

@@ -85,17 +85,32 @@ class MatrixSpec extends FlatSpec with Matchers {
     }
   }
 
-  "Unary minus" should "change each element to -element" in {
-    for {
-      data <- datas
-      m = Matrix(data)
-      inv = -m
-      r <- 0 until m.rows
-      c <- 0 until m.cols
-    } inv(r, c) should be (-m(r, c))
-  }
+  "Unary minus" should "change each element to -element" in
+    testForEachElement(matrixFn = -_, elementFn = -_)
+
 
   it should "applied twice return the equals object" in {
     datas map Matrix.apply foreach { m => m should be (-(-m))}
+  }
+
+  "Plus and minus operator" should "add and subtract scalar to each element" in {
+    val scalar = 10
+    testForEachElement(_ + scalar, _ + scalar)
+    testForEachElement(_ - scalar, _ - scalar)
+  }
+
+  "Minus operator" should "be equal + (- element)" in {
+    datas map Matrix.apply foreach { m => m - 10 should be(m + (-10)) }
+  }
+
+  def testForEachElement(matrixFn: Matrix => Matrix,
+                         elementFn: Double => Double): Unit = {
+    for {
+      data <- datas
+      m = Matrix(data)
+      newM = matrixFn(m)
+      r <- 0 until m.rows
+      c <- 0 until m.cols
+    } newM(r, c) should be(elementFn(m(r, c)))
   }
 }
