@@ -1,12 +1,14 @@
 package scalalgebra
 
+import scala.language.postfixOps
+
 class Matrix(elems: Vector[Vector[Double]]) {
   val rows = elems.length
   require(rows > 0)
   require(elems forall (r => r.length == elems.head.length))
   val cols = elems.head.length
   require(cols > 0)
-  private val data: Vector[Vector[Double]] = elems
+  private val data = elems
   val size = rows * cols
 
   def row(row: Int): Matrix = Matrix(Vector(data(row)))
@@ -19,7 +21,12 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def +(other: Matrix): Matrix = {
     require(compareSize(other))
-    ???
+    //todo refactor it!
+    Matrix(0 until rows map { r =>
+      0 until cols map { c =>
+        this (r, c) + other(r, c)
+      } toVector
+    } toVector)
   }
 
   def -(other: Matrix): Matrix = this + (-other)

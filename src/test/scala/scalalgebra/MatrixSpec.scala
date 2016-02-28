@@ -9,13 +9,27 @@ class MatrixSpec extends FlatSpec with Matchers {
     Vector(7, 8, 9)
   )
 
-  lazy val rectangleData:Vector[Vector[Double]] = Vector(
+  lazy val rectangleData: Vector[Vector[Double]] = Vector(
     Vector(1, 2, 3, 2),
     Vector(4, 5, 6, 3),
     Vector(7, 8, 9, 3)
   )
 
-  lazy val rectMatrix = Matrix(rectangleData)
+  lazy val rectangleData2: Vector[Vector[Double]] = Vector(
+    Vector(12, 12, 33, 22),
+    Vector(43, 15, 236, 32),
+    Vector(72, 18, 93, 33)
+  )
+
+  lazy val rectangleData3: Vector[Vector[Double]] = Vector(
+    Vector(1, 12, 323, 222),
+    Vector(4, 5, 236, 32),
+    Vector(7, 18, 3, 33)
+  )
+
+  lazy val rm1 = Matrix(rectangleData)
+  lazy val rm2 = Matrix(rectangleData2)
+  lazy val rm3 = Matrix(rectangleData3)
   lazy val squareMatrix = Matrix(squareData)
 
   lazy val datas = Seq(squareData, rectangleData)
@@ -107,17 +121,15 @@ class MatrixSpec extends FlatSpec with Matchers {
   }
 
   "Sum and sub" should "throw exception when add matrix different size" in {
-    a[IllegalArgumentException] should be thrownBy squareMatrix + rectMatrix
-    a[IllegalArgumentException] should be thrownBy squareMatrix - rectMatrix
+    a[IllegalArgumentException] should be thrownBy squareMatrix + rm1
+    a[IllegalArgumentException] should be thrownBy squareMatrix - rm1
   }
 
-  "Sum" should "be commutative" in {
-    //todo
-  }
+  "Sum" should "be commutative" in
+    rm1 + rm2 should be(rm2 + rm1)
 
-  it should "be associative" in {
-    //todo
-  }
+  it should "be associative" in
+    (rm1 + rm2) + rm3 should be(rm1 + (rm2 + rm3))
 
   it should "not change matrix when add zero matrix" in {
     //todo
