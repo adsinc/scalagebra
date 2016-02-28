@@ -3,7 +3,7 @@ package scalalgebra
 import scala.language.postfixOps
 import scala.util.Random
 
-class Matrix(val data: Vector[Vector[Double]]) {
+class Matrix(val data: Vector[Vector[Double]], val precision: Double = 0.001) {
   val rows = data.length
   require(rows > 0)
   require(data forall (r => r.length == data.head.length))
@@ -41,9 +41,15 @@ class Matrix(val data: Vector[Vector[Double]]) {
     other.rows == rows && other.cols == cols
 
   override def equals(that: scala.Any): Boolean = that match {
-    case m: Matrix => compareSize(m) && m.data == data
+    case m: Matrix => compareSize(m) && {
+      //todo refactor?
+      m.data.flatten zip data.flatten forall (p => (p._1 - p._2).abs <= precision)
+    }
     case _ => false
   }
+
+  override def toString: String =
+    data map (_ mkString " ") mkString(s"\n$rows x $cols\n", "\n", "\n")
 }
 
 object Matrix {
