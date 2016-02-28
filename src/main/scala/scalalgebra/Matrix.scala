@@ -19,17 +19,19 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def unary_-(): Matrix = Matrix(data map (_ map (-_)))
 
-  def +(other: Matrix): Matrix = {
+  def +(other: Matrix): Matrix = elementByElementOp(other, _ + _)
+
+  def -(other: Matrix): Matrix = elementByElementOp(other, _ - _)
+
+  private def elementByElementOp(other: Matrix,
+                                 fn: (Double, Double) => Double) = {
     require(compareSize(other))
-    //todo refactor it!
     Matrix(0 until rows map { r =>
       0 until cols map { c =>
-        this (r, c) + other(r, c)
+        fn(this(r, c), other(r, c))
       } toVector
     } toVector)
   }
-
-  def -(other: Matrix): Matrix = this + (-other)
 
   def +(number: Double): Matrix = Matrix(data map (_ map (_ + number)))
 
@@ -46,4 +48,8 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
 object Matrix {
   def apply(elems: Vector[Vector[Double]]): Matrix = new Matrix(elems)
+  def zeros(rows: Int, cols: Int) = {
+    val row = {0 until cols map (_ => 0.0)}.toVector
+    Matrix(0 until rows map (_ => row) toVector)
+  }
 }

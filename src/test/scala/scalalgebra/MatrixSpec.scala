@@ -2,6 +2,8 @@ package scalalgebra
 
 import org.scalatest.{FlatSpec, Matchers}
 
+import scalalgebra.Matrix.zeros
+
 class MatrixSpec extends FlatSpec with Matchers {
   lazy val squareData: Vector[Vector[Double]] = Vector(
     Vector(1, 2, 3),
@@ -80,7 +82,7 @@ class MatrixSpec extends FlatSpec with Matchers {
       val elements = 0 until m.rows map { r =>
         0 until m.cols map (m(r, _))
       }
-      elements should be (data)
+      elements should be(data)
     }
   }
 
@@ -88,7 +90,7 @@ class MatrixSpec extends FlatSpec with Matchers {
     datas foreach { data =>
       val m = Matrix(data)
       0 until m.rows foreach { r =>
-        m.row(r) should be (Matrix(Vector(data(r))))
+        m.row(r) should be(Matrix(Vector(data(r))))
       }
     }
   }
@@ -97,9 +99,17 @@ class MatrixSpec extends FlatSpec with Matchers {
     datas foreach { data =>
       val m = Matrix(data)
       0 until m.cols foreach { c =>
-        m.col(c) should be (Matrix(data map (row => Vector(row(c)))))
+        m.col(c) should be(Matrix(data map (row => Vector(row(c)))))
       }
     }
+  }
+
+  "Zero matrix" should "be zero for all elements" in {
+    val m = zeros(3, 4)
+    for {
+      r <- 0 until m.rows
+      c <- 0 until m.cols
+    } m(r, c) should be (0)
   }
 
   "Unary minus" should "change each element to -element" in
@@ -107,7 +117,7 @@ class MatrixSpec extends FlatSpec with Matchers {
 
 
   it should "applied twice return the equals object" in {
-    datas map Matrix.apply foreach { m => m should be (-(-m))}
+    datas map Matrix.apply foreach { m => m should be(-(-m)) }
   }
 
   "Plus and minus operator for scalar" should "add and subtract scalar to each element" in {
@@ -125,18 +135,25 @@ class MatrixSpec extends FlatSpec with Matchers {
     a[IllegalArgumentException] should be thrownBy squareMatrix - rm1
   }
 
-  "Sum" should "be commutative" in
-    rm1 + rm2 should be(rm2 + rm1)
-
-  it should "be associative" in
-    (rm1 + rm2) + rm3 should be(rm1 + (rm2 + rm3))
-
-  it should "not change matrix when add zero matrix" in {
-    //todo
+  "Sum" should "be commutative" in {
+    val a = rm1 + rm2
+    val b = rm2 + rm1
+    a should be(b)
   }
 
+  it should "be associative" in {
+    val a = (rm1 + rm2) + rm3
+    val b = rm1 + (rm2 + rm3)
+    a should be (b)
+  }
+
+  it should "not change matrix when add zero matrix" in
+    testForEachElement(m => m + zeros(m.rows, m.cols), e => e)
+
   it should "be zero matrix when add -matrix" in {
-    //todo
+    Seq(squareMatrix, rm1) foreach { m =>
+      m + (-m) should be (zeros(m.rows, m.cols))
+    }
   }
 
   def testForEachElement(matrixFn: Matrix => Matrix,
