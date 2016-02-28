@@ -1,12 +1,14 @@
 package scalalgebra
 
+import scala.language.postfixOps
+
 class Matrix(elems: Vector[Vector[Double]]) {
   val rows = elems.length
   require(rows > 0)
   require(elems forall (r => r.length == elems.head.length))
   val cols = elems.head.length
   require(cols > 0)
-  private val data: Vector[Vector[Double]] = elems
+  private val data = elems
   val size = rows * cols
 
   def row(row: Int): Matrix = Matrix(Vector(data(row)))
@@ -15,13 +17,39 @@ class Matrix(elems: Vector[Vector[Double]]) {
 
   def apply(row: Int, col: Int): Double = elems(row)(col)
 
+  def unary_-(): Matrix = Matrix(data map (_ map (-_)))
+
+  def +(other: Matrix): Matrix = elementByElementOp(other, _ + _)
+
+  def -(other: Matrix): Matrix = elementByElementOp(other, _ - _)
+
+  private def elementByElementOp(other: Matrix,
+                                 fn: (Double, Double) => Double) = {
+    require(compareSize(other))
+    Matrix(0 until rows map { r =>
+      0 until cols map { c =>
+        fn(this(r, c), other(r, c))
+      } toVector
+    } toVector)
+  }
+
+  def +(number: Double): Matrix = Matrix(data map (_ map (_ + number)))
+
+  def -(number: Double): Matrix = Matrix(data map (_ map (_ - number)))
+
+  def compareSize(other: Matrix): Boolean =
+    other.rows == rows && other.cols == cols
+
   override def equals(that: scala.Any): Boolean = that match {
-    case m: Matrix =>
-      m.cols == cols && m.data == data
+    case m: Matrix => compareSize(m) && m.data == data
     case _ => false
   }
 }
 
 object Matrix {
-  def apply(elems: Vector[Vector[Double]]) = new Matrix(elems)
+  def apply(elems: Vector[Vector[Double]]): Matrix = new Matrix(elems)
+  def zeros(rows: Int, cols: Int) = {
+    val row = {0 until cols map (_ => 0.0)}.toVector
+    Matrix(0 until rows map (_ => row) toVector)
+  }
 }
