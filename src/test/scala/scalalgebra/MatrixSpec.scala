@@ -2,48 +2,27 @@ package scalalgebra
 
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.util.Random
 import scalalgebra.Matrix.zeros
 
 class MatrixSpec extends FlatSpec with Matchers {
-  lazy val squareData: Vector[Vector[Double]] = Vector(
-    Vector(1, 2, 3),
-    Vector(4, 5, 6),
-    Vector(7, 8, 9)
-  )
+  val RectRows = 3
+  val RectCols = 4
+  val SqRows = 3
 
-  lazy val rectangleData: Vector[Vector[Double]] = Vector(
-    Vector(1, 2, 3, 2),
-    Vector(4, 5, 6, 3),
-    Vector(7, 8, 9, 3)
-  )
+  lazy val squareM = Matrix.random(SqRows, SqRows)
 
-  lazy val rectangleData2: Vector[Vector[Double]] = Vector(
-    Vector(12, 12, 33, 22),
-    Vector(43, 15, 236, 32),
-    Vector(72, 18, 93, 33)
-  )
+  lazy val rm1 = Matrix.random(RectRows, RectCols)
+  lazy val rm2 = Matrix.random(RectRows, RectCols)
+  lazy val rm3 = Matrix.random(RectRows, RectCols)
 
-  lazy val rectangleData3: Vector[Vector[Double]] = Vector(
-    Vector(1, 12, 323, 222),
-    Vector(4, 5, 236, 32),
-    Vector(7, 18, 3, 33)
-  )
-
-  lazy val rm1 = Matrix(rectangleData)
-  lazy val rm2 = Matrix(rectangleData2)
-  lazy val rm3 = Matrix(rectangleData3)
-  lazy val squareMatrix = Matrix(squareData)
-
-  lazy val datas = Seq(squareData, rectangleData)
+  lazy val matrices = Seq(squareM, rm1)
 
   "A Matrix" should "have size equals rows * cols" in {
     val ms = Seq(
-      Matrix(Vector(Vector(1))),
-      Matrix(Vector(Vector(1, 2, 3))),
-      Matrix(Vector(
-        Vector(1, 2, 3),
-        Vector(1, 3, 4)
-      ))
+      Matrix.random(1, 1),
+      Matrix.random(1, 5),
+      Matrix.random(3, 4)
     )
     ms foreach (m => m.size should be(m.rows * m.cols))
   }
@@ -77,29 +56,26 @@ class MatrixSpec extends FlatSpec with Matchers {
   }
 
   it should "correctly return elements by index" in {
-    datas foreach { data =>
-      val m = Matrix(data)
+    matrices foreach { m =>
       val elements = 0 until m.rows map { r =>
         0 until m.cols map (m(r, _))
       }
-      elements should be(data)
+      elements should be(m.data)
     }
   }
 
   it should "correctly return row by index" in {
-    datas foreach { data =>
-      val m = Matrix(data)
+    matrices foreach { m =>
       0 until m.rows foreach { r =>
-        m.row(r) should be(Matrix(Vector(data(r))))
+        m.row(r) should be(Matrix(Vector(m.data(r))))
       }
     }
   }
 
   it should "correctly return column by index" in {
-    datas foreach { data =>
-      val m = Matrix(data)
+    matrices foreach { m =>
       0 until m.cols foreach { c =>
-        m.col(c) should be(Matrix(data map (row => Vector(row(c)))))
+        m.col(c) should be(Matrix(m.data map (row => Vector(row(c)))))
       }
     }
   }
@@ -117,22 +93,23 @@ class MatrixSpec extends FlatSpec with Matchers {
 
 
   it should "applied twice return the equals object" in {
-    datas map Matrix.apply foreach { m => m should be(-(-m)) }
+    matrices foreach { m => m should be(-(-m)) }
   }
 
   "Plus and minus operator for scalar" should "add and subtract scalar to each element" in {
-    val scalar = 10
+    val scalar = Random.nextDouble()
     testForEachElement(_ + scalar, _ + scalar)
     testForEachElement(_ - scalar, _ - scalar)
   }
 
   "Minus operator for scalar" should "be equal + (- element)" in {
-    datas map Matrix.apply foreach { m => m - 10 should be(m + (-10)) }
+    val scalar = Random.nextDouble()
+    matrices foreach { m => m - scalar should be(m + (-scalar)) }
   }
 
   "Sum and sub" should "throw exception when add matrix different size" in {
-    a[IllegalArgumentException] should be thrownBy squareMatrix + rm1
-    a[IllegalArgumentException] should be thrownBy squareMatrix - rm1
+    a[IllegalArgumentException] should be thrownBy squareM + rm1
+    a[IllegalArgumentException] should be thrownBy squareM - rm1
   }
 
   "Sum" should "be commutative" in {
@@ -151,7 +128,7 @@ class MatrixSpec extends FlatSpec with Matchers {
     testForEachElement(m => m + zeros(m.rows, m.cols), e => e)
 
   it should "be zero matrix when add -matrix" in {
-    Seq(squareMatrix, rm1) foreach { m =>
+    matrices foreach { m =>
       m + (-m) should be (zeros(m.rows, m.cols))
     }
   }
@@ -159,8 +136,7 @@ class MatrixSpec extends FlatSpec with Matchers {
   def testForEachElement(matrixFn: Matrix => Matrix,
                          elementFn: Double => Double): Unit = {
     for {
-      data <- datas
-      m = Matrix(data)
+      m <- matrices
       newM = matrixFn(m)
       r <- 0 until m.rows
       c <- 0 until m.cols
