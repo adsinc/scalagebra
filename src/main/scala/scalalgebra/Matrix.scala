@@ -3,13 +3,21 @@ package scalalgebra
 import scala.language.postfixOps
 import scala.util.Random
 
-class Matrix(val data: Vector[Vector[Double]], val precision: Double = 0.001) {
-  val rows = data.length
-  require(rows > 0)
-  require(data forall (r => r.length == data.head.length))
-  val cols = data.head.length
-  require(cols > 0)
+class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val precision: Double) {
+  //todo remove
+  val data: Vector[Vector[Double]] = (elements grouped cols).toVector
+  require(rows > 0 && cols > 0)
   val size = rows * cols
+  require(elements.length == size)
+
+  def this(data: Vector[Vector[Double]], precision: Double = 0.001) {
+    this(
+      elements = data.flatten,
+      rows = data.length,
+      cols = data.head.length,
+      precision = precision
+    )
+  }
 
   def row(row: Int): Matrix = Matrix(Vector(data(row)))
 

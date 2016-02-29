@@ -29,7 +29,6 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "throw IllegalArgumentException if rows or cols is less then 1" in {
     a[IllegalArgumentException] should be thrownBy {
-      Matrix(Vector())
       Matrix(Vector(Vector()))
       Matrix(Vector(Vector(), Vector()))
     }
