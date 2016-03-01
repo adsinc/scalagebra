@@ -32,7 +32,12 @@ class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val pre
 
   def col(col: Int): Matrix = {
     validateColumn(col)
-    Matrix(data map (row => Vector(row(col))))
+    new Matrix(
+      elements = col until (size, cols) map elements.apply toVector,
+      rows = rows,
+      cols = 1,
+      precision = precision
+    )
   }
 
   def apply(row: Int, col: Int): Double = {
@@ -51,7 +56,12 @@ class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val pre
     }
 
 
-  def unary_-(): Matrix = Matrix(data map (_ map (-_)))
+  def unary_-(): Matrix = new Matrix(
+    elements = elements map (-_),
+    rows = rows,
+    cols = cols,
+    precision = precision
+  )
 
   def +(other: Matrix): Matrix = elementByElementOp(other, _ + _)
 
