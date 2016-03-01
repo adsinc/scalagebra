@@ -34,7 +34,6 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
       throw new NoSuchElementException(s"Index $index not in interval [0; $maxValue]")
     }
 
-
   def unary_-(): Matrix = copy(elements = elements map (-_))
 
   def +(other: Matrix): Matrix = elementByElementOp(other, _ + _)
