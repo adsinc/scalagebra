@@ -56,9 +56,10 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "correctly return elements by index" in {
     matrices foreach { m =>
+      val data = extract2dData(m)
       0 until m.rows foreach { r =>
         0 until m.cols foreach { c =>
-          m(r, c) should be (m.data(r)(c))
+          m(r, c) should be (data(r)(c))
         }
       }
       a[NoSuchElementException] should be thrownBy m(m.rows + 1, 0)
@@ -71,8 +72,9 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "correctly return row by index" in {
     matrices foreach { m =>
+      val data = extract2dData(m)
       0 until m.rows foreach { r =>
-        m.row(r) should be(Matrix(Vector(m.data(r))))
+        m.row(r) should be(Matrix(Vector(data(r))))
       }
       a[NoSuchElementException] should be thrownBy m.row(m.rows + 1)
       a[NoSuchElementException] should be thrownBy m.row(-1)
@@ -81,8 +83,9 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "correctly return column by index" in {
     matrices foreach { m =>
+      val data = extract2dData(m)
       0 until m.cols foreach { c =>
-        m.col(c) should be(Matrix(m.data map (row => Vector(row(c)))))
+        m.col(c) should be(Matrix(data map (row => Vector(row(c)))))
       }
       a[NoSuchElementException] should be thrownBy m.col(m.cols + 1)
     }
@@ -150,4 +153,6 @@ class MatrixSpec extends FlatSpec with Matchers {
       c <- 0 until m.cols
     } newM(r, c) should be(elementFn(m(r, c)))
   }
+
+  private def extract2dData(m: Matrix) = m.elements.grouped(m.cols).toVector
 }

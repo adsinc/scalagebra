@@ -1,26 +1,13 @@
 package scalalgebra
 
-import scala.language.postfixOps
 import scala.util.Random
-import scalalgebra.Matrix.DefaultPrecision
 
 case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Double) {
-  //todo remove
-  val data: Vector[Vector[Double]] = (elements grouped cols).toVector
   val size = rows * cols
 
   //todo messages for all require
   require(rows > 0 && cols > 0)
   require(elements.length == size)
-
-  def this(data: Vector[Vector[Double]], precision: Double = DefaultPrecision) {
-    this(
-      elements = data.flatten,
-      rows = data.length,
-      cols = data.head.length,
-      precision = precision
-    )
-  }
 
   def row(row: Int): Matrix = {
     validateRow(row)
@@ -29,7 +16,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
 
   def col(col: Int): Matrix = {
     validateColumn(col)
-    copy(elements = col until (size, cols) map elements.apply toVector, cols = 1)
+    copy(elements = (col until (size, cols) map elements.apply).toVector, cols = 1)
   }
 
   def apply(row: Int, col: Int): Double = {
@@ -81,13 +68,19 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
 object Matrix {
   val DefaultPrecision = 0.001
 
-  def apply(elems: Vector[Vector[Double]], precision: Double = DefaultPrecision): Matrix = new Matrix(elems, precision)
-
-  def zeros(rows: Int, cols: Int): Matrix = {
-    val row = {0 until cols map (_ => 0.0)}.toVector
-    Matrix(0 until rows map (_ => row) toVector)
+  def apply(data: Vector[Vector[Double]], precision: Double = DefaultPrecision): Matrix = {
+    Matrix(
+      elements = data.flatten,
+      rows = data.length,
+      cols = data.head.length,
+      precision = precision
+    )
   }
 
-  def random(rows: Int, cols: Int): Matrix =
-    Matrix(Vector.fill(rows, cols)(Random.nextDouble()))
+  def zeros(rows: Int, cols: Int, precision: Double = DefaultPrecision): Matrix = {
+    Matrix(Vector.fill(rows, cols)(0), precision = precision)
+  }
+
+  def random(rows: Int, cols: Int, precision: Double = DefaultPrecision): Matrix =
+    Matrix(Vector.fill(rows, cols)(Random.nextDouble()), precision = precision)
 }
