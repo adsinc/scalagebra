@@ -2,6 +2,7 @@ package scalalgebra
 
 import scala.language.postfixOps
 import scala.util.Random
+import scalalgebra.Matrix.DefaultPrecision
 
 class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val precision: Double) {
   //todo remove
@@ -10,7 +11,7 @@ class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val pre
   val size = rows * cols
   require(elements.length == size)
 
-  def this(data: Vector[Vector[Double]], precision: Double = 0.001) {
+  def this(data: Vector[Vector[Double]], precision: Double = DefaultPrecision) {
     this(
       elements = data.flatten,
       rows = data.length,
@@ -19,11 +20,36 @@ class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val pre
     )
   }
 
-  def row(row: Int): Matrix = Matrix(Vector(data(row)))
+  def row(row: Int): Matrix = {
+    validateRow(row)
+    new Matrix(
+      elements = elements slice(row * cols, cols * (row + 1)),
+      rows = 1,
+      cols = cols,
+      precision = precision
+    )
+  }
 
-  def col(col: Int): Matrix = Matrix(data map (row => Vector(row(col))))
+  def col(col: Int): Matrix = {
+    validateColumn(col)
+    Matrix(data map (row => Vector(row(col))))
+  }
 
-  def apply(row: Int, col: Int): Double = data(row)(col)
+  def apply(row: Int, col: Int): Double = {
+    validateRow(row)
+    validateColumn(col)
+    elements(row * cols + col)
+  }
+
+  private def validateColumn(col: Int) = validateIndex(col, cols)
+
+  private def validateRow(row: Int) = validateIndex(row, rows)
+
+  private def validateIndex(index: Int, maxValue: Int) =
+    if(index >= maxValue || index < 0) {
+      throw new NoSuchElementException(s"Index $index not in interval [0; $maxValue]")
+    }
+
 
   def unary_-(): Matrix = Matrix(data map (_ map (-_)))
 
@@ -61,7 +87,9 @@ class Matrix(val elements: Vector[Double], val rows: Int, val cols: Int, val pre
 }
 
 object Matrix {
-  def apply(elems: Vector[Vector[Double]]): Matrix = new Matrix(elems)
+  val DefaultPrecision = 0.001
+
+  def apply(elems: Vector[Vector[Double]], precision: Double = DefaultPrecision): Matrix = new Matrix(elems)
 
   def zeros(rows: Int, cols: Int): Matrix = {
     val row = {0 until cols map (_ => 0.0)}.toVector
