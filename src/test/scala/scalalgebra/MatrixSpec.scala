@@ -29,7 +29,6 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "throw IllegalArgumentException if rows or cols is less then 1" in {
     a[IllegalArgumentException] should be thrownBy {
-      Matrix(Vector())
       Matrix(Vector(Vector()))
       Matrix(Vector(Vector(), Vector()))
     }
@@ -57,26 +56,38 @@ class MatrixSpec extends FlatSpec with Matchers {
 
   it should "correctly return elements by index" in {
     matrices foreach { m =>
-      val elements = 0 until m.rows map { r =>
-        0 until m.cols map (m(r, _))
+      val data = extract2dData(m)
+      0 until m.rows foreach { r =>
+        0 until m.cols foreach { c =>
+          m(r, c) should be (data(r)(c))
+        }
       }
-      elements should be(m.data)
+      a[NoSuchElementException] should be thrownBy m(m.rows + 1, 0)
+      a[NoSuchElementException] should be thrownBy m(0, m.cols + 1)
+      a[NoSuchElementException] should be thrownBy m(m.rows + 1, m.cols + 1)
+      a[NoSuchElementException] should be thrownBy m(-1, 1)
+      a[NoSuchElementException] should be thrownBy m(1, -1)
     }
   }
 
   it should "correctly return row by index" in {
     matrices foreach { m =>
+      val data = extract2dData(m)
       0 until m.rows foreach { r =>
-        m.row(r) should be(Matrix(Vector(m.data(r))))
+        m.row(r) should be(Matrix(Vector(data(r))))
       }
+      a[NoSuchElementException] should be thrownBy m.row(m.rows + 1)
+      a[NoSuchElementException] should be thrownBy m.row(-1)
     }
   }
 
   it should "correctly return column by index" in {
     matrices foreach { m =>
+      val data = extract2dData(m)
       0 until m.cols foreach { c =>
-        m.col(c) should be(Matrix(m.data map (row => Vector(row(c)))))
+        m.col(c) should be(Matrix(data map (row => Vector(row(c)))))
       }
+      a[NoSuchElementException] should be thrownBy m.col(m.cols + 1)
     }
   }
 
@@ -142,4 +153,6 @@ class MatrixSpec extends FlatSpec with Matchers {
       c <- 0 until m.cols
     } newM(r, c) should be(elementFn(m(r, c)))
   }
+
+  private def extract2dData(m: Matrix) = m.elements.grouped(m.cols).toVector
 }
