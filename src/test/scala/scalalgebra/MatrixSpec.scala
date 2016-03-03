@@ -107,10 +107,11 @@ class MatrixSpec extends FlatSpec with Matchers {
     matrices foreach { m => m should be(-(-m)) }
   }
 
-  "Plus and minus operator for scalar" should "add and subtract scalar to each element" in {
+  "Plus, minus and multiplicate  operator for scalar" should "add and subtract multiplicate each element on scalar" in {
     val scalar = Random.nextDouble()
     testForEachElement(_ + scalar, _ + scalar)
     testForEachElement(_ - scalar, _ - scalar)
+    testForEachElement(_ * scalar, _ * scalar)
   }
 
   "Minus operator for scalar" should "be equal + (- element)" in {
