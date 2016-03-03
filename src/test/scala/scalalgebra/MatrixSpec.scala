@@ -145,6 +145,12 @@ class MatrixSpec extends FlatSpec with Matchers {
     }
   }
 
+  "Multiplication" should "matrix with one matrix should not change it" in {
+    val one: Matrix = Matrix.one(squareM.rows)
+    squareM * one should be (squareM)
+    one * squareM should be (squareM)
+  }
+
   def testForEachElement(matrixFn: Matrix => Matrix,
                          elementFn: Double => Double): Unit = {
     for {

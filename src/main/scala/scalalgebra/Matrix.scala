@@ -1,8 +1,9 @@
 package scalalgebra
 
 import scala.util.Random
+import scalalgebra.Matrix.Precision
 
-case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Double) {
+case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit precision: Precision) {
   val size = rows * cols
 
   //todo messages for all require
@@ -61,7 +62,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
 
   override def equals(that: scala.Any): Boolean = that match {
     case m: Matrix => equalsSize(m) && {
-      m.elements zip elements forall (p => (p._1 - p._2).abs <= precision)
+      m.elements zip elements forall (p => (p._1 - p._2).abs <= precision.value)
     }
     case _ => false
   }
@@ -72,20 +73,25 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
 
 object Matrix {
   val DefaultPrecision = 0.001
+  case class Precision(value: Double)
+  implicit val precision = Precision(DefaultPrecision)
 
-  def apply(data: Vector[Vector[Double]], precision: Double = DefaultPrecision): Matrix = {
+  def apply(data: Vector[Vector[Double]]): Matrix = {
     Matrix(
       elements = data.flatten,
       rows = data.length,
-      cols = data.head.length,
-      precision = precision
+      cols = data.head.length
     )
   }
 
-  def zeros(rows: Int, cols: Int, precision: Double = DefaultPrecision): Matrix = {
-    Matrix(Vector.fill(rows, cols)(0), precision = precision)
+  def zeros(rows: Int, cols: Int): Matrix = {
+    Matrix(Vector.fill(rows, cols)(0))
   }
 
-  def random(rows: Int, cols: Int, precision: Double = DefaultPrecision): Matrix =
-    Matrix(Vector.fill(rows, cols)(Random.nextDouble()), precision = precision)
+  def one(size: Int): Matrix = {
+    Matrix(Vector.tabulate(size, size)((r, c) => if(r == c) 1 else 0))
+  }
+
+  def random(rows: Int, cols: Int): Matrix =
+    Matrix(Vector.fill(rows, cols)(Random.nextDouble()))
 }
