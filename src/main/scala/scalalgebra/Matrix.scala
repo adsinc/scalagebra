@@ -46,6 +46,8 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
     copy(elements = elements zip other.elements map fn.tupled)
   }
 
+  def *(other: Matrix): Matrix = ???
+
   def +(number: Double): Matrix = applyToEach(_ + number)
 
   def -(number: Double): Matrix = applyToEach(_ - number)
