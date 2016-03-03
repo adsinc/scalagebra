@@ -16,7 +16,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
 
   def col(col: Int): Matrix = {
     validateColumn(col)
-    copy(elements = (col until (size, cols) map elements.apply).toVector, cols = 1)
+    copy(elements = (col until(size, cols) map elements.apply).toVector, cols = 1)
   }
 
   def apply(row: Int, col: Int): Double = {
@@ -30,7 +30,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
   private def validateRow(row: Int) = validateIndex(row, rows)
 
   private def validateIndex(index: Int, maxValue: Int) =
-    if(index >= maxValue || index < 0) {
+    if (index >= maxValue || index < 0) {
       throw new NoSuchElementException(s"Index $index not in interval [0; $maxValue]")
     }
 
@@ -46,9 +46,13 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
     copy(elements = elements zip other.elements map fn.tupled)
   }
 
-  def +(number: Double): Matrix = copy(elements = elements map (_ + number))
+  def +(number: Double): Matrix = applyToEach(_ + number)
 
-  def -(number: Double): Matrix = copy(elements = elements map (_ - number))
+  def -(number: Double): Matrix = applyToEach(_ - number)
+
+  def *(number: Double): Matrix = applyToEach(_ * number)
+
+  private def applyToEach(fn: (Double) => Double) = copy(elements = elements map fn)
 
   def equalsSize(other: Matrix): Boolean =
     other.rows == rows && other.cols == cols
@@ -61,7 +65,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int, precision: Dou
   }
 
   override def toString: String =
-    elements grouped cols map (_ mkString " ") mkString (s"\n$rows x $cols\n", "\n", "\n")
+    elements grouped cols map (_ mkString " ") mkString(s"\n$rows x $cols\n", "\n", "\n")
 }
 
 object Matrix {
