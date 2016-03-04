@@ -6,23 +6,19 @@ import scalalgebra.Matrix.Precision
 case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit precision: Precision) {
   val size = rows * cols
 
-  require(rows > 0, s"Rows = $rows but should be be > 0")
-  require(cols > 0, s"Cols = $cols but should be be > 0")
+  require(rows > 0, s"Rows = $rows but should be > 0")
+  require(cols > 0, s"Cols = $cols but should be > 0")
   require(elements.length == size, s"Elements length = ${elements.length} != $rows * $cols ($size)")
 
   def row(row: Int): Matrix = {
     validateRow(row)
-    copy(elements = extractRowElements(row), rows = 1)
+    copy(elements = elements slice(row * cols, cols * (row + 1)), rows = 1)
   }
-
-  private def extractRowElements(row: Int) = elements slice(row * cols, cols * (row + 1))
 
   def col(col: Int): Matrix = {
     validateColumn(col)
-    copy(elements = extractColElements(col).toVector, cols = 1)
+    copy(elements = (col until(size, cols) map elements.apply).toVector, cols = 1)
   }
-
-  private def extractColElements(col: Int) = col until(size, cols) map elements.apply
 
   def apply(row: Int, col: Int): Double = {
     validateRow(row)
@@ -56,8 +52,8 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
     val newData = for {
       r <- 0 until rows
       c <- 0 until other.cols
-      re = extractRowElements(r)
-      ce = other.extractColElements(c)
+      re = row(r).elements
+      ce = other.col(c).elements
     } yield (re zip ce map (p => p._1 * p._2)).sum
     Matrix(newData.toVector, rows, other.cols)
   }
