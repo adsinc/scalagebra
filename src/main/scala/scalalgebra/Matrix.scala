@@ -6,9 +6,9 @@ import scalalgebra.Matrix.Precision
 case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit precision: Precision) {
   val size = rows * cols
 
-  //todo messages for all require
-  require(rows > 0 && cols > 0)
-  require(elements.length == size)
+  require(rows > 0, s"Rows = $rows but should be be > 0")
+  require(cols > 0, s"Cols = $cols but should be be > 0")
+  require(elements.length == size, s"Elements length = ${elements.length} != $rows * $cols ($size)")
 
   def row(row: Int): Matrix = {
     validateRow(row)
@@ -47,7 +47,7 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
 
   private def elementByElementOp(other: Matrix,
                                  fn: (Double, Double) => Double) = {
-    require(equalsSize(other))
+    require(equalsSize(other), "Matrices should be equals size")
     copy(elements = elements zip other.elements map fn.tupled)
   }
 
