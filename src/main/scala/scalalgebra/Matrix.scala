@@ -12,13 +12,17 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
 
   def row(row: Int): Matrix = {
     validateRow(row)
-    copy(elements = elements slice(row * cols, cols * (row + 1)), rows = 1)
+    copy(elements = extractRowElements(row), rows = 1)
   }
+
+  private def extractRowElements(row: Int) = elements slice(row * cols, cols * (row + 1))
 
   def col(col: Int): Matrix = {
     validateColumn(col)
-    copy(elements = (col until(size, cols) map elements.apply).toVector, cols = 1)
+    copy(elements = extractColElements(col).toVector, cols = 1)
   }
+
+  private def extractColElements(col: Int) = col until(size, cols) map elements.apply
 
   def apply(row: Int, col: Int): Double = {
     validateRow(row)
@@ -47,7 +51,16 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
     copy(elements = elements zip other.elements map fn.tupled)
   }
 
-  def *(other: Matrix): Matrix = ???
+  def *(other: Matrix): Matrix = {
+    require(cols == other.rows, "To allow A * B A.cols should be equal B.rows")
+    val newData = for {
+      r <- 0 until rows
+      c <- 0 until other.cols
+      re = extractRowElements(r)
+      ce = other.extractColElements(c)
+    } yield (re zip ce map (p => p._1 * p._2)).sum
+    Matrix(newData.toVector, rows, other.cols)
+  }
 
   def +(number: Double): Matrix = applyToEach(_ + number)
 

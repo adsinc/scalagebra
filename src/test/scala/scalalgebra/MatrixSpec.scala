@@ -16,6 +16,8 @@ class MatrixSpec extends FlatSpec with Matchers {
   lazy val rm2 = Matrix.random(RectRows, RectCols)
   lazy val rm3 = Matrix.random(RectRows, RectCols)
 
+  lazy val rm = Matrix.random(RectCols, RectRows)
+
   lazy val matrices = Seq(squareM, rm1)
 
   "A Matrix" should "have size equals rows * cols" in {
@@ -145,10 +147,37 @@ class MatrixSpec extends FlatSpec with Matchers {
     }
   }
 
-  "Multiplication" should "matrix with one matrix should not change it" in {
+  "Multiplication" should "throw IllegalArgumentException if left arg cols is not equal right argument rows" in {
+    a[IllegalArgumentException] should be thrownBy rm1 * rm2
+  }
+
+  it should "result matrix (left arg rows)X(right argument cols)" in {
+    val p = rm1 * rm
+    p.rows should be (rm1.rows)
+    p.cols should be (rm.cols)
+  }
+
+  it should "matrix with one matrix should not change it" in {
     val one: Matrix = Matrix.one(squareM.rows)
     squareM * one should be (squareM)
     one * squareM should be (squareM)
+  }
+
+  it should "be associative" in {
+    rm1 * (rm * rm2) should be ((rm1 * rm) * rm2)
+  }
+
+  it should "be distributive" in {
+    rm * (rm1 + rm2) should be(rm * rm1 + rm * rm2)
+    (rm1 + rm2) * rm should be(rm1 * rm + rm2 * rm)
+  }
+
+  it should "be zero when one of arguments is zero" in {
+    matrices foreach { m =>
+      val z = zeros(m.cols, m.rows)
+      m * z should be (zeros(m.rows, z.cols))
+      z * m should be (zeros(z.rows, m.cols))
+    }
   }
 
   def testForEachElement(matrixFn: Matrix => Matrix,
