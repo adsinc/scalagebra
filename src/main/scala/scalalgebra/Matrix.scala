@@ -49,13 +49,11 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
 
   def *(other: Matrix): Matrix = {
     require(cols == other.rows, "To allow A * B A.cols should be equal B.rows")
-    val newData = for {
-      r <- 0 until rows
-      c <- 0 until other.cols
-      re = row(r).elements
-      ce = other.col(c).elements
-    } yield (re zip ce map (p => p._1 * p._2)).sum
-    Matrix(newData.toVector, rows, other.cols)
+    Matrix(Vector.tabulate(rows, other.cols) { (r, c) =>
+      val re = row(r).elements
+      val ce = other.col(c).elements
+      (re zip ce map (p => p._1 * p._2)).sum
+    })
   }
 
   def +(number: Double): Matrix = applyToEach(_ + number)
