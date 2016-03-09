@@ -62,6 +62,10 @@ case class Matrix(elements: Vector[Double], rows: Int, cols: Int)(implicit preci
 
   def *(number: Double): Matrix = applyToEach(_ * number)
 
+  def t: Matrix = transpose
+
+  def transpose: Matrix = Matrix(Vector.tabulate(cols, rows)((r, c) => this (c, r)))
+
   private def applyToEach(fn: (Double) => Double) = copy(elements = elements map fn)
 
   def equalsSize(other: Matrix): Boolean =
