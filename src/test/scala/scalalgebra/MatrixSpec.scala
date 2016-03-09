@@ -180,6 +180,26 @@ class MatrixSpec extends FlatSpec with Matchers {
     }
   }
 
+  "Transpose" should "change rows by columns" in {
+    for {
+      m <- matrices
+      mt = m.transpose
+      i <- 0 until m.rows
+    } m.row(i).elements should be(mt.col(i).elements)
+  }
+
+  it should "not change matrix if applied twice" in {
+    matrices foreach (m => m.t.t should be(m))
+  }
+
+  it should "return MxN matrix when applied to NxM matrix" in {
+    matrices foreach { m =>
+      val mt = m.t
+      m.rows should be(mt.cols)
+      m.cols should be(mt.rows)
+    }
+  }
+
   def testForEachElement(matrixFn: Matrix => Matrix,
                          elementFn: Double => Double): Unit = {
     for {
