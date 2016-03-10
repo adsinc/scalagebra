@@ -87,21 +87,17 @@ object Matrix {
   case class Precision(value: Double)
   implicit val precision = Precision(DefaultPrecision)
 
-  def apply(data: Vector[Vector[Double]]): Matrix = {
-    Matrix(
-      elements = data.flatten,
-      rows = data.length,
-      cols = data.head.length
-    )
-  }
+  def apply(data: Vector[Vector[Double]]): Matrix = Matrix(
+    elements = data.flatten,
+    rows = data.length,
+    cols = data.head.length
+  )
 
-  def zeros(rows: Int, cols: Int): Matrix = {
-    Matrix(Vector.fill(rows, cols)(0))
-  }
+  def zeros(rows: Int, cols: Int): Matrix = Matrix(Vector.fill(rows, cols)(0))
 
-  def one(size: Int): Matrix = {
+  def one(size: Int): Matrix =
     Matrix(Vector.tabulate(size, size)((r, c) => if(r == c) 1 else 0))
-  }
+
 
   def random(rows: Int, cols: Int): Matrix =
     Matrix(Vector.fill(rows, cols)(Random.nextDouble()))

@@ -32,6 +32,8 @@ class MatrixSpec extends FlatSpec with Matchers {
   it should "throw IllegalArgumentException if rows or cols is less then 1" in {
     a[IllegalArgumentException] should be thrownBy {
       Matrix(Vector(Vector()))
+    }
+    a[IllegalArgumentException] should be thrownBy {
       Matrix(Vector(Vector(), Vector()))
     }
   }
@@ -50,10 +52,11 @@ class MatrixSpec extends FlatSpec with Matchers {
     Matrix(Vector(Vector(1, 2, 3, 4))) should be(Matrix(Vector(Vector(1, 2, 3, 4))))
   }
 
-  it should "be not equal to another instance with different elements" in {
+  it should "be not equal to another instance with different elements or another object" in {
     Matrix(Vector(Vector(1))) should not be Matrix(Vector(Vector(2)))
     Matrix(Vector(Vector(1, 2, 3, 4))) should not be Matrix(Vector(Vector(3, 2, 3, 4)))
     Matrix(Vector(Vector(1, 2, 3, 4))) should not be Matrix(Vector(Vector(1, 2), Vector(3, 4)))
+    matrices foreach(_ == Vector() should be (false))
   }
 
   it should "correctly return elements by index" in {
